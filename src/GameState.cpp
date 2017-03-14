@@ -14,6 +14,8 @@ GameplayState::GameplayState(GameStateManager *gsm_, SDL_Renderer *renderTarget_
 	p_H = 50;
 	p_W = 60;
 	player = NULL;
+	clouds = NULL;
+	ground = NULL;
 
 	cake_spawn_time = -1;
 	score = 0;
@@ -36,12 +38,32 @@ GameplayState::~GameplayState()
         *cakes_iter = NULL;
         cakes_iter = cakes.erase(cakes_iter);
     }
+	if (clouds)
+		SDL_DestroyTexture(clouds);
+	clouds = NULL;
+	if (ground)
+		SDL_DestroyTexture(ground);
+	ground = NULL;
 }
 void GameplayState::init()
 {
 	player = new Pig_Player(NULL, renderTarget);
     player->setPosition(30, 30);//75, 0
     player->setVector(0, 0);
+
+	clouds = LoadTexture("./Resources/Backgrounds/Clouds.bmp", renderTarget);
+	if (!clouds)
+		printf("Failed to load clouds\n");
+	SDL_QueryTexture(clouds, NULL, NULL, &(cloud_rect.w), &(cloud_rect.h));
+	cloud_rect.x = 0;
+	cloud_rect.y = 0;
+
+	ground = LoadTexture("./Resources/Backgrounds/ground.bmp", renderTarget);
+	if (!ground)
+        printf("Failed to load ground\n");
+	SDL_QueryTexture(ground, NULL, NULL, &(ground_rect.w), &(ground_rect.h));
+	ground_rect.x = 0;
+	ground_rect.y = GamePanel::WINDOW_HEIGHT - ground_rect.h;
 /*
 	cake = new Cake(NULL, renderTarget, 100);
 	cake->setPosition(150, 150);
@@ -133,6 +155,8 @@ void GameplayState::update()
 }
 void GameplayState::draw()
 {
+	SDL_RenderCopyEx(renderTarget, ground, NULL, &ground_rect, 0, NULL, SDL_FLIP_NONE);	
+
 	std::list<Cake*>::iterator iter;
     for (iter=cakes.begin(); iter != cakes.end(); ++iter)
     {
@@ -140,6 +164,8 @@ void GameplayState::draw()
     }
 
 	player->draw();
+
+	SDL_RenderCopyEx(renderTarget, clouds, NULL, &cloud_rect, 0, NULL, SDL_FLIP_NONE);
 }
 void GameplayState::keyPressed(int k)
 {

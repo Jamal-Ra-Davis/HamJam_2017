@@ -54,6 +54,13 @@ class GameplayState : public GameState
 		Pig_Player *player;
 		std::list<Cake*> cakes;
 
+		SDL_Rect cloud_rect;
+		SDL_Texture *clouds;
+		
+		SDL_Rect ground_rect;
+		SDL_Texture *ground;
+
+
 		int cake_spawn_time;
 		double cake_timer;
 		void spawnCake();		

@@ -421,14 +421,14 @@ void Pig_Player::update()
 			dash_end = true;
 		}
 	}
-	if (ydest + cheight/2 + cOffset_y > GamePanel::WINDOW_HEIGHT)
+	if (ydest + cheight/2 + cOffset_y > GamePanel::WINDOW_HEIGHT - 27) 
 	{
 		if (dy > -jumpStart/4)
 		{
 			landing = true;
 		}
 
-		ydest = GamePanel::WINDOW_HEIGHT - cheight/2 - cOffset_y;
+		ydest = GamePanel::WINDOW_HEIGHT - cheight/2 - cOffset_y - 27;
 		dy = 0;
 		onGround = true;
 		canDoubleJump = true;
