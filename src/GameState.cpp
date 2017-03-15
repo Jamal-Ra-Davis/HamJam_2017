@@ -17,12 +17,15 @@ GameplayState::GameplayState(GameStateManager *gsm_, SDL_Renderer *renderTarget_
 	clouds = NULL;
 	ground = NULL;
 
+	score_display = NULL;
+	time_display = NULL;
+
 	cake_spawn_time = -1;
 	score = 0;
 	multiplier = 0;	
 	input_allowed = true;
 	game_end = false;
-	game_timer = 30000;
+	game_timer = 120000;
 }
 GameplayState::~GameplayState()
 {
@@ -44,11 +47,18 @@ GameplayState::~GameplayState()
 	if (ground)
 		SDL_DestroyTexture(ground);
 	ground = NULL;
+
+	if (score_display)
+		delete score_display;
+	score_display = NULL;
+	if (time_display)
+		delete time_display;
+	time_display = NULL;
 }
 void GameplayState::init()
 {
 	player = new Pig_Player(NULL, renderTarget);
-    player->setPosition(30, 30);//75, 0
+    player->setPosition(GamePanel::WINDOW_WIDTH/2, GamePanel::WINDOW_HEIGHT - 50);//75, 0
     player->setVector(0, 0);
 
 	clouds = LoadTexture("./Resources/Backgrounds/Clouds.bmp", renderTarget);
@@ -64,6 +74,10 @@ void GameplayState::init()
 	SDL_QueryTexture(ground, NULL, NULL, &(ground_rect.w), &(ground_rect.h));
 	ground_rect.x = 0;
 	ground_rect.y = GamePanel::WINDOW_HEIGHT - ground_rect.h;
+
+	score_display = new Numbers(renderTarget, 6, 2, 5, 5);
+	time_display = new Numbers(renderTarget, 3, 2, 0, 5);
+	time_display->setX(GamePanel::WINDOW_WIDTH - time_display->getWidth() - 5);
 /*
 	cake = new Cake(NULL, renderTarget, 100);
 	cake->setPosition(150, 150);
@@ -121,7 +135,7 @@ void GameplayState::update()
 			if (!game_end)
 				multiplier++;
 			updateScore(cake->getValue()*getMultiplier());
-			printf("Score: %d, Multipler: %d\n", score, getMultiplier());
+			//printf("Score: %d, Multipler: %d\n", score, getMultiplier());
         }
         if (cake->shouldRemove() || cake->getY() > GamePanel::WINDOW_HEIGHT*2)
         {
@@ -140,9 +154,9 @@ void GameplayState::update()
 
 
 	spawnCake();	
-	return;
-	printf("Time Left: %.2lf\n", (game_timer - (getMs() - start_time))/1000);
-	if (game_timer - (getMs() - start_time) <= 0)
+	//printf("Time Left: %.2lf\n", (game_timer - (getMs() - start_time))/1000);
+	double remaining_time = game_timer - (getMs() - start_time);
+	if (remaining_time <= 0)
 	{
 		game_end = true;
 		input_allowed = false;
@@ -150,7 +164,11 @@ void GameplayState::update()
 		player->setRight(false);
 		player->setUp(false);
 		player->setDown(false);
-		printf("Game End\n");
+		//printf("Game End\n");
+	}
+	if (game_end && remaining_time < -5000)
+	{
+		gsm->setState(GameStateManager::GAMEPLAY_STATE);
 	}
 }
 void GameplayState::draw()
@@ -166,6 +184,11 @@ void GameplayState::draw()
 	player->draw();
 
 	SDL_RenderCopyEx(renderTarget, clouds, NULL, &cloud_rect, 0, NULL, SDL_FLIP_NONE);
+	score_display->draw(score);
+	int time = (int)((game_timer - (getMs() - start_time))/1000);
+	if (time < 0)
+		time = 0;
+	time_display->draw(time);
 }
 void GameplayState::keyPressed(int k)
 {

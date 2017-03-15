@@ -70,7 +70,10 @@ int GamePanel::init()
 	
 	//SDL_SetRenderDrawColor(renderTarget, 0xFF, 0, 0, 0xFF);
 	//SDL_SetRenderDrawColor(renderTarget, 0, 0, 0, 0xFF);
-	SDL_SetRenderDrawColor(renderTarget, 27, 147, 169, 0xFF);
+	int r=77;//27;
+	int g=52;//147;
+	int b=202;//169;
+	SDL_SetRenderDrawColor(renderTarget, r, g, b, 0xFF);
 
 	return 0;	
 }

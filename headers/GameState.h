@@ -60,6 +60,8 @@ class GameplayState : public GameState
 		SDL_Rect ground_rect;
 		SDL_Texture *ground;
 
+		Numbers *score_display;
+		Numbers *time_display;
 
 		int cake_spawn_time;
 		double cake_timer;
