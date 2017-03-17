@@ -43,7 +43,7 @@ class Pig_Player : public MapObject
 
 	public:
 		enum Player_Actions {STANDING, WALKING, JUMP_START, JUMP_PEAK, FALLING, LANDING, BRAKING_F, BRAKING_R, DASH_START, DASHING, DASH_STOP, SLIDE, ANM_NUM};
-		//enum Player_Sounds {DANCE_SFX, WALK_SFX, JUMP_SFX, KICK_SFX, HIT_SFX, DIE_SFX, BOMBA_START_SFX, BOMBA_FUSE_SFX, BOMBA_THROW_SFX, BOMBA_HIT_SFX, SFX_NUM};
+		enum Player_Sounds {JUMP_SFX, SFX_NUM};
 
 		Pig_Player(TileMap *tm, SDL_Renderer *renderTarget_);
         ~Pig_Player();

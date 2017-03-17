@@ -72,7 +72,6 @@ Pig_Player::Pig_Player(TileMap *tm, SDL_Renderer *renderTarget_) : MapObject(tm,
 
 	initAnimation();
 
-/*
 	//Audio loading
     player_sounds = NULL;
     player_sounds = new AudioPlayer*[SFX_NUM];
@@ -80,17 +79,7 @@ Pig_Player::Pig_Player(TileMap *tm, SDL_Renderer *renderTarget_) : MapObject(tm,
     {
         player_sounds[i] = NULL;
     }
-	player_sounds[DANCE_SFX] = new AudioPlayer("./Resources/SFX/BMOGame_DanceAnim.wav", false);
-	player_sounds[WALK_SFX] = new AudioPlayer("./Resources/SFX/BMOGame_Footstep.wav", false);
-    player_sounds[JUMP_SFX] = new AudioPlayer("./Resources/SFX/BMOGame_Jump.wav", false);
-	player_sounds[KICK_SFX] = new AudioPlayer("./Resources/SFX/BMOGame_Kick.wav", false);
-	player_sounds[HIT_SFX] = new AudioPlayer("./Resources/SFX/BMOGame_Hit.wav", false);
-    player_sounds[DIE_SFX] = new AudioPlayer("./Resources/SFX/BMOGame_Die.wav", false);
-	player_sounds[BOMBA_START_SFX] = new AudioPlayer("./Resources/SFX/BMOGame_TakeOutBomba.wav", false);
-	player_sounds[BOMBA_FUSE_SFX] = new AudioPlayer("./Resources/SFX/BMOGame_BombaFuse.wav", false);
-	player_sounds[BOMBA_THROW_SFX] = new AudioPlayer("./Resources/SFX/scratch.wav", false);
-	player_sounds[BOMBA_HIT_SFX] = new AudioPlayer("./Resources/SFX/BMOGame_BombaExplodes.wav", false);
-*/
+    player_sounds[JUMP_SFX] = new AudioPlayer("./Resources/SFX/HamJam_Jump.wav", false);
 	
 }
 Pig_Player::~Pig_Player()
@@ -356,7 +345,10 @@ void Pig_Player::setJumping(bool b)
 		return;
 	jumping = b;
 	if (jumping)
+	{
+		player_sounds[JUMP_SFX]->play(0);
 		dashStop();
+	}
 }
 SDL_Rect Pig_Player::getCollisionRect()
 {
