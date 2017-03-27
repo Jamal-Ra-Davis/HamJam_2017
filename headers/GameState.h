@@ -52,7 +52,8 @@ class GameplayState : public GameState
 		Numbers *time_display;
 
 		AudioPlayer **level_sounds;
-		
+		AudioPlayer *bgm;	
+	
 		int cake_spawn_time;
 		double cake_timer;
 		void spawnCake();		

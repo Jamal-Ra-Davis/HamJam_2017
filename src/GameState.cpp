@@ -20,6 +20,7 @@ GameplayState::GameplayState(GameStateManager *gsm_, SDL_Renderer *renderTarget_
 	time_display = NULL;
 
 	level_sounds = NULL;
+	bgm = NULL;
 
 	cake_spawn_time = -1;
 	score = 0;
@@ -65,6 +66,10 @@ GameplayState::~GameplayState()
     }
     delete level_sounds;
     level_sounds = NULL;
+
+	if (bgm)
+		delete bgm;
+	bgm = NULL;
 }
 void GameplayState::init()
 {
@@ -103,10 +108,13 @@ void GameplayState::init()
     }
     level_sounds[CAKE_SFX] = new AudioPlayer("./Resources/SFX/HamJam_Pickup.wav", false);
 
+	bgm = new AudioPlayer("./Resources/Music/Digital_Lemonade.mp3", true);
 
 	cake_timer = getMs();
 
 	spawnCake();
+
+	bgm->play(AudioPlayer::LOOP);
 
 	start_time = getMs();	
 
@@ -190,6 +198,7 @@ void GameplayState::update()
 	}
 	if (game_end && remaining_time < -5000)
 	{
+		bgm->stop();
 		gsm->setState(GameStateManager::GAMEPLAY_STATE);
 	}
 }

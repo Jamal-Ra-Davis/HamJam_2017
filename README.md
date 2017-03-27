@@ -18,3 +18,12 @@ Controls:
 [Z]: 			Dash
 [LEFT ARROW]: 	Move left
 [RIGHT ARROW]: 	Move Right
+
+
+Music accreditation:
+Digital Lemonade Kevin MacLeod (incompetech.com) 
+Licensed under Creative Commons: By Attribution 3.0
+http://creativecommons.org/licenses/by/3.0/
+
+SFX accreditation:
+www.bfxr.net
