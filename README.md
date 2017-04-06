@@ -7,6 +7,8 @@ libsdl2-mixer-2.0-0
 libsdl-ttf2.0-dev
 libsdl2-dev
 
+libsdl2-mixer-dev
+
 
 Description:
 A simple score attack game; collect cakes to score points and get as high a score as possible before time runs out.
