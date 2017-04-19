@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string>
 #include "../headers/GameState.h"
 #include "../headers/SDL_Helpers.h"
 #include "../headers/GamePanel.h"
@@ -199,7 +200,9 @@ void GameplayState::update()
 	if (game_end && remaining_time < -5000)
 	{
 		bgm->stop();
-		gsm->setState(GameStateManager::GAMEPLAY_STATE);
+		gsm->setScore(score);
+		gsm->setState(GameStateManager::WIN_STATE);
+		return;
 	}
 }
 void GameplayState::draw()
@@ -294,6 +297,307 @@ void GameplayState::keyReleased(int k)
 		case SDLK_SPACE:
         {
             //player->setJumping(false);
+            break;
+        }
+    }
+}
+
+
+WinState::WinState(GameStateManager *gsm_, SDL_Renderer *renderTarget_)
+{
+    gsm = gsm_;
+    renderTarget = renderTarget_;
+	words = NULL;
+	digits = NULL;
+}
+WinState::~WinState()
+{
+	printf("Win State Destructor...\n");
+	if (words)
+		delete words;
+	words = NULL;
+
+	if (digits)
+		delete digits;
+	digits = NULL;
+}
+void WinState::init()
+{
+	name_idx = 0;
+	letter_idx = 0;
+	up = false;
+	down = false;
+	enter = false;
+	back = false;
+
+	for (int i=0; i<4; i++)
+	{
+		score_name[i] = '\0';
+	}
+
+	score_val = gsm->getScore();
+
+	sprintf(high_score_filename, "./Resources/Files/High_Scores.txt");
+
+    FILE *fp = fopen(high_score_filename, "r");
+    if (fp == NULL)
+        printf("Error, failed to open file: %s\n",  high_score_filename);
+
+	set_high_score = false;
+	insert_idx = -1;
+	for (int i=0; i<MAX_SCORES; i++)
+	{
+		fscanf(fp, "%s %d ", score_names[i], &(high_scores[i]));
+
+		//printf("%d\n", high_scores[i]);
+		if (score_val > high_scores[i] && !set_high_score)
+		{
+			set_high_score = true;
+			insert_idx = i;
+		}
+	}
+	fclose(fp);
+
+	words = new Letters(renderTarget, "", 3, 0, 0);
+	digits = new Numbers(renderTarget, 6, 2, 5, 5);
+}
+void WinState::update()
+{
+	if (set_high_score)
+	{
+		//Enterting name characters
+        if (name_idx < 3)
+        {
+			if (up)
+				letter_idx++;
+			else if (down)
+				letter_idx--;
+
+			if (letter_idx > 25)
+				letter_idx = 0;
+			if (letter_idx < 0)
+				letter_idx = 25;
+
+			if (enter)
+			{
+				score_name[name_idx] = (char)(letter_idx + 65);
+				letter_idx = 0;
+			}
+        }
+        //Display confirmation      
+        else if(name_idx == 3)
+        {
+
+        }
+        //
+        else
+        {
+            set_high_score = false;
+
+			for (int i=MAX_SCORES-1; i > insert_idx; i--)
+			{
+				high_scores[i] = high_scores[i-1];
+				sprintf(score_names[i], "%s", score_names[i-1]);
+			}
+			high_scores[insert_idx] = score_val;
+			sprintf(score_names[insert_idx], "%s", score_name);
+
+			FILE *fp = fopen(high_score_filename, "w");
+			for (int i=0; i<MAX_SCORES; i++)
+			{
+				fprintf(fp, "%s %d\n", score_names[i], high_scores[i]);
+
+			}
+			fclose(fp);	
+        }
+
+
+		if (enter)
+            name_idx++;
+        else if (back)
+            name_idx--;
+        if (name_idx > 4)
+            name_idx = 4;
+        if (name_idx < 0)
+            name_idx = 0;	
+	}
+	else
+	{
+		if (enter)
+		{
+			gsm->setScore(0);
+        	gsm->setState(GameStateManager::GAMEPLAY_STATE);
+			return;
+		}	
+	}
+
+	blink_timer++;
+	if (blink_timer >= BLINK_PERIOD)
+		blink_timer = 0;
+
+
+	up = false;
+    down = false;
+    enter = false;
+    back = false;	
+}
+void WinState::draw()
+{
+	if (set_high_score)
+    {
+		bool word_visible = true;
+		if (name_idx < 3)
+		{
+			word_visible = (blink_timer < BLINK_PERIOD/2);
+		}
+
+		//Enterting name characters
+		words->setX(100);
+        words->setY(100);
+		std::string str = "";
+		for (int i=0; i<name_idx; i++)
+			str.push_back(score_name[i]);
+
+		words->setVisible(true);
+		words->setWord(str);
+		words->draw();
+
+
+		if (name_idx < 3)
+		{
+		str = "";
+		str.push_back((char)(letter_idx + 65));		
+		//words->setWord(""+(char)(letter_idx + 65));
+		//words->setWord(str);
+		//printf("%c\n", (char)(letter_idx + 65));
+		words->setX(words->getX() + words->getWidth() + words->getSpacing());
+		words->setWord(str);
+		words->setVisible(word_visible);		
+		words->draw();
+		}
+
+		if (name_idx == 3)
+		{
+			words->setWord("Confirm");
+			words->setY(words->getY() + words->getHeight() + words->getSpacing());
+			words->draw();
+		}
+
+	
+		/*
+		if (name_idx < 3)
+		{
+			std::string str = "";
+
+			for (i=0; i<name_idx; i++)
+				str += score_name[i];
+
+			words->setWord(str)
+			words->draw();
+			words->setWord(score_name[name_idx]);
+			words->setX(words->getX() + words->getWidth() + words->getSpacing());
+			words->setVisible((blinkTimer < BLINK_PERIOD/2));
+			words->draw();
+		}	
+		//Display confirmation 		
+		else if(name_idx == 3)
+		{
+			std::string str = ""
+			for (i=0; i<=name_idx; i++)
+                str += score_name[i];	
+			
+		}
+		*/
+    }
+    else
+    {
+		words->setX(100);
+        words->setY(100);
+		words->setVisible(true);
+
+		for (int i=0; i<MAX_SCORES; i++)
+		{
+        	std::string name(score_names[i]);
+        	words->setWord(name);
+        	words->draw();	
+
+			digits->setX(words->getX() + 100);
+			digits->setY(words->getY());
+			digits->draw(high_scores[i]);			
+
+			words->setY(words->getY() + 2*words->getHeight() + words->getSpacing());	
+		}	
+    }
+}
+void WinState::keyPressed(int k)
+{
+    switch (k)
+    {
+        case SDLK_LEFT:
+        {
+            break;
+        }
+        case SDLK_RIGHT:
+        {
+            break;
+        }
+        case SDLK_UP:
+        {
+			up = true;
+            break;
+        }
+        case SDLK_DOWN:
+        {
+			down = true;
+            break;
+        }
+        case SDLK_SPACE:
+        {
+            break;
+        }
+		case SDLK_RETURN:
+        {
+			enter = true;
+            break;
+        }
+		case SDLK_RSHIFT:
+		{
+			back = true;
+			break;
+		}
+    }
+}
+void WinState::keyReleased(int k)
+{
+    switch (k)
+    {
+        case SDLK_LEFT:
+        {
+            break;
+        }
+        case SDLK_RIGHT:
+        {
+            break;
+        }
+        case SDLK_UP:
+        {
+            break;
+        }
+        case SDLK_DOWN:
+        {
+            break;
+        }
+        case SDLK_SPACE:
+        {
+            //player->setJumping(false);
+            break;
+        }
+		case SDLK_RETURN:
+        {
+            break;
+        }
+		case SDLK_RSHIFT:
+        {
             break;
         }
     }

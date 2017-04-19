@@ -11,6 +11,7 @@
 #include "../headers/Pig_Player.h"
 #include "../headers/Cake.h"
 #include "../headers/Numbers.h"
+#include "../headers/Letters.h"
 
 #define NUM_OPTIONS 2
 class GameStateManager;
@@ -69,4 +70,40 @@ class GameplayState : public GameState
 		void keyPressed(int k);
 		void keyReleased(int k);
 };
+
+
+class WinState : public GameState
+{
+	private:
+		const static int MAX_SCORES = 5;
+		char high_score_filename[64];// = "./Resources/Files/BgObject_List.txt";	
+		int high_scores[MAX_SCORES];
+		char score_names[MAX_SCORES][4];	
+	
+		int score_val;
+		bool set_high_score;	
+		int insert_idx;
+
+		char score_name[4];// = {'\0', '\0', '\0', '\0'};
+		int name_idx;
+		int letter_idx;
+
+		static const int BLINK_PERIOD = 40;
+		long blink_timer;		
+
+		bool up, down, enter, back;
+	
+		Letters *words;	
+		Numbers *digits;
+
+	public:
+		WinState(GameStateManager *gsm_, SDL_Renderer *renderTarget_);
+		~WinState();
+		void init();
+		void update();
+		void draw();
+		void keyPressed(int k);
+		void keyReleased(int k);
+};
+
 

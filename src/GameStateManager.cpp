@@ -74,7 +74,6 @@ void GameStateManager::loadState(int state)
 			}
 			break;
 		}
-		/*
 		case WIN_STATE:
 		{
 			if (!gameStates[state])
@@ -83,7 +82,6 @@ void GameStateManager::loadState(int state)
 			}
 			break;
 		}
-		*/
 	}
 }
 void GameStateManager::unloadState(int state)
