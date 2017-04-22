@@ -614,10 +614,15 @@ TitleState::TitleState(GameStateManager *gsm_, SDL_Renderer *renderTarget_)
 	frameNumbers = NULL;
 
 	numAnimations = ANM_NUM;
+
+	up = false;
+    down = false;
+    enter = false;
+    back = false;
+	timer = 0;
 }
 TitleState::~TitleState()
 {
-/*
 	if (bg)
 		delete bg;
 	bg = NULL;
@@ -641,14 +646,19 @@ TitleState::~TitleState()
 	if (frameNumbers)
 		delete[] frameNumbers;
 	frameNumbers = NULL;
-*/
 }
 void TitleState::init()
 {
+	up = false;
+    down = false;
+    enter = false;
+    back = false;
+	timer = 0;
+
 	int temp_cur_pos[NUM_CHOICES][2] = 	{
-											{440, 234},
+											{437, 234},
 											{425, 282},
-											{445, 330}
+											{442, 330}
 										};
 	for (int i=0; i<NUM_CHOICES; i++)
 	{
@@ -656,6 +666,7 @@ void TitleState::init()
 		cursor_positions[i][1] = temp_cur_pos[i][1];
 	}
 	menu_choice = START;
+	printf("Menu Choice start = %d\n", menu_choice);
 	setCursorPos(menu_choice);
 
 	cursor_width = 35;
@@ -691,7 +702,7 @@ void TitleState::init()
         }
     }
 
-
+	initAnimation();
 }
 void TitleState::setCursorPos(int mc)
 {
@@ -700,17 +711,133 @@ void TitleState::setCursorPos(int mc)
 	cursor_x = cursor_positions[mc][0];
 	cursor_y = cursor_positions[mc][1];
 }
+void TitleState::initAnimation()
+{
+	currentAction = IDLE;
+    animation.setFrames(animationTexture, sprite_rects[currentAction], frameNumbers[currentAction]);
+    animation.setDelay(-1);
+    cursor_width = sprite_rects[currentAction][animation.getFrame()].w;
+}
 void TitleState::update()
 {
+	if (currentAction == NOD)
+	{
+		up = false;
+    	down = false;
+    	enter = false;
+    	back = false;
+	}
 
+	if (up)
+	{
+		//printf("Increment menu choice\n");
+		menu_choice--;
+	}
+	else if (down)
+	{
+		menu_choice++;
+	}
+	if (menu_choice >= NUM_CHOICES)
+	{
+		menu_choice = 0;
+	}
+	if (menu_choice < 0)
+	{
+		menu_choice = NUM_CHOICES - 1;
+	}
+
+	setCursorPos(menu_choice);
+
+
+	if (enter && currentAction != NOD)
+	{
+		currentAction = NOD;
+        animation.setFrames(animationTexture, sprite_rects[currentAction], frameNumbers[currentAction], true);
+        animation.setDelay(100);
+        cursor_width = sprite_rects[currentAction][animation.getFrame()].w;
+	}
+	if (currentAction == NOD && animation.hasPlayedOnce())
+	{
+		//initAnimation();
+		if (timer == 0)
+		{
+			timer = getMs();
+		}
+		else if (getMs() - timer >= DELAY)
+		{
+			switch(menu_choice)
+			{
+				case START:
+				{
+					gsm->setState(GameStateManager::GAMEPLAY_STATE);
+					return;
+				}
+				case CREDITS:
+				{
+					initAnimation();
+					timer = 0;
+					break;
+				}
+				case EXIT:
+				{
+					*(GamePanel::isRunningControl) = false;
+					return;
+				}
+			}
+		}
+	}
+	animation.update();	
+	
+	up = false;
+    down = false;
+    enter = false;
+    back = false;	
 }
 void TitleState::draw()
 {
-	//bg->draw();
+	bg->draw();
+
+	SDL_Rect posRect = {(int)(cursor_x - cursor_width/2), (int)(cursor_y - cursor_height/2), cursor_width, cursor_height};
+    SDL_Rect cropRect = animation.getImageRect();
+    SDL_RenderCopyEx(renderTarget, animation.getFrameTexture(), &cropRect, &posRect, 0, NULL, SDL_FLIP_NONE);
 }
 void TitleState::keyPressed(int k)
 {
-
+	switch (k)
+    {
+        case SDLK_LEFT:
+        {
+            break;
+        }
+        case SDLK_RIGHT:
+        {
+            break;
+        }
+        case SDLK_UP:
+        {
+            up = true;
+            break;
+        }
+        case SDLK_DOWN:
+        {
+            down = true;
+            break;
+        }
+        case SDLK_SPACE:
+        {
+            break;
+        }
+        case SDLK_RETURN:
+        {
+            enter = true;
+            break;
+        }
+        case SDLK_RSHIFT:
+        {
+            back = true;
+            break;
+        }
+    }
 }
 void TitleState::keyReleased(int k)
 {

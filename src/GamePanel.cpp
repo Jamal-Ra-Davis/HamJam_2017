@@ -90,13 +90,13 @@ int GamePanel::run()
 		prevTime = currTime;
         currTime = SDL_GetTicks();
         deltaTime = (currTime - prevTime)/1000.0f;
-
+		
 		handleInputs();
 		update();
 		draw();
 		drawToScreen();
-
-		while (SDL_GetTicks() - currTime < 16);	
+		while (SDL_GetTicks() - currTime < 16);
+			
 	}
 	close();
 	return 0;

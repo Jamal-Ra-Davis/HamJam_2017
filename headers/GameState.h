@@ -14,7 +14,6 @@
 #include "../headers/Letters.h"
 #include "../headers/Animation.h"
 
-#define NUM_OPTIONS 2
 class GameStateManager;
 class GameState
 {
@@ -110,6 +109,9 @@ class WinState : public GameState
 class TitleState : public GameState
 {
 	private:
+		enum Cursor_Actions{IDLE, NOD, ANM_NUM};
+        enum Menu_Choices{START, CREDITS, EXIT, NUM_CHOICES};
+
 		Background *bg;
 
 		//Animations
@@ -125,15 +127,20 @@ class TitleState : public GameState
 		int cursor_width;
 		int cursor_height;
 	
-		int cursor_positions[NUM_OPTIONS][2];
+		int cursor_positions[NUM_CHOICES][2];
 
 		int menu_choice;		
+
+		bool up, down, enter, back;
 	
 		void setCursorPos(int mc);	
+		void initAnimation();
 
+		long timer;
+		const static int DELAY = 250;
 	public:
-		enum Cursor_Actions{IDLE, NOD, ANM_NUM};
-		enum Menu_Choices{START, CREDITS, EXIT, NUM_CHOICES};
+		//enum Cursor_Actions{IDLE, NOD, ANM_NUM};
+		//enum Menu_Choices{START, CREDITS, EXIT, NUM_CHOICES};
 		TitleState(GameStateManager *gsm_, SDL_Renderer *renderTarget_);
         ~TitleState();
         void init();
