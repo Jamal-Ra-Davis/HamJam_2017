@@ -12,6 +12,7 @@
 #include "../headers/Cake.h"
 #include "../headers/Numbers.h"
 #include "../headers/Letters.h"
+#include "../headers/Animation.h"
 
 #define NUM_OPTIONS 2
 class GameStateManager;
@@ -109,8 +110,30 @@ class WinState : public GameState
 class TitleState : public GameState
 {
 	private:
+		Background *bg;
+
+		//Animations
+        int numAnimations;
+        SDL_Texture *animationTexture;
+        SDL_Rect **sprite_rects;
+        int *frameNumbers;
+		Animation animation;
+        int currentAction;
+	
+		int cursor_x;
+		int cursor_y;
+		int cursor_width;
+		int cursor_height;
+	
+		int cursor_positions[NUM_OPTIONS][2];
+
+		int menu_choice;		
+	
+		void setCursorPos(int mc);	
 
 	public:
+		enum Cursor_Actions{IDLE, NOD, ANM_NUM};
+		enum Menu_Choices{START, CREDITS, EXIT, NUM_CHOICES};
 		TitleState(GameStateManager *gsm_, SDL_Renderer *renderTarget_);
         ~TitleState();
         void init();

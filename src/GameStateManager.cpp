@@ -5,7 +5,7 @@
 GameStateManager::GameStateManager(SDL_Renderer *renderTarget_)
 {
 	renderTarget = renderTarget_;
-	currentState = GAMEPLAY_STATE;
+	currentState = TITLE_STATE;//GAMEPLAY_STATE;
 	
 	score = 0;
 	gameStates = new GameState*[NUM_STATES];
@@ -56,7 +56,6 @@ void GameStateManager::loadState(int state)
 {
 	switch (state)
 	{
-		/*
 		case TITLE_STATE:
         {
             if (!gameStates[state])
@@ -65,7 +64,6 @@ void GameStateManager::loadState(int state)
             }
             break;
         }
-		*/
 		case GAMEPLAY_STATE:
 		{
 			if (!gameStates[state])

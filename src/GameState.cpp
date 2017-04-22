@@ -603,3 +603,117 @@ void WinState::keyReleased(int k)
     }
 }
 
+TitleState::TitleState(GameStateManager *gsm_, SDL_Renderer *renderTarget_)
+{
+	gsm = gsm_;
+    renderTarget = renderTarget_;
+
+	bg = NULL;
+	animationTexture = NULL;
+	sprite_rects = NULL;
+	frameNumbers = NULL;
+
+	numAnimations = ANM_NUM;
+}
+TitleState::~TitleState()
+{
+/*
+	if (bg)
+		delete bg;
+	bg = NULL;
+
+	if (animationTexture)
+		SDL_DestroyTexture(animationTexture);
+    animationTexture = NULL;
+
+	if (sprite_rects)
+	{
+		for (int i=0; i<numAnimations; i++)
+    	{
+			if (sprite_rects[i])
+        		delete [] sprite_rects[i];
+        	sprite_rects[i] = NULL;
+    	}
+		delete [] sprite_rects;
+    	sprite_rects = NULL;
+	}
+
+	if (frameNumbers)
+		delete[] frameNumbers;
+	frameNumbers = NULL;
+*/
+}
+void TitleState::init()
+{
+	int temp_cur_pos[NUM_CHOICES][2] = 	{
+											{440, 234},
+											{425, 282},
+											{445, 330}
+										};
+	for (int i=0; i<NUM_CHOICES; i++)
+	{
+		cursor_positions[i][0] = temp_cur_pos[i][0];
+		cursor_positions[i][1] = temp_cur_pos[i][1];
+	}
+	menu_choice = START;
+	setCursorPos(menu_choice);
+
+	cursor_width = 35;
+	cursor_height = 35;
+
+	bg = new Background("./Resources/Backgrounds/HamJam_Title.bmp", 0, renderTarget);
+	bg->setVector(0, 0);
+	bg->setPosition(0, 0);
+
+    frameNumbers = NULL;
+    frameNumbers = new int[numAnimations];
+    int tempNums[ANM_NUM] = {1, 4};
+	for (int i=0; i<numAnimations; i++)
+        frameNumbers[i] = tempNums[i];
+	
+	sprite_rects = NULL;
+    sprite_rects = new SDL_Rect*[numAnimations];
+    for (int i=0; i<numAnimations; i++)
+    {
+        sprite_rects[i] = NULL;
+        sprite_rects[i] = new SDL_Rect[frameNumbers[i]];
+    }
+	animationTexture = LoadTexture("./Resources/Sprites/Pig_Cursor_sprites.bmp", renderTarget);
+    if (animationTexture)
+        printf("DEBUG: Loaded title background\n");
+    for (int i=0; i<numAnimations; i++)
+    {
+        for (int j=0; j<frameNumbers[i]; j++)
+        {
+            sprite_rects[i][j].x = j*cursor_width;
+            sprite_rects[i][j].y = i*cursor_height;
+            sprite_rects[i][j].w = cursor_width;
+            sprite_rects[i][j].h = cursor_height;
+        }
+    }
+
+
+}
+void TitleState::setCursorPos(int mc)
+{
+	if (mc >= NUM_CHOICES)
+		return;
+	cursor_x = cursor_positions[mc][0];
+	cursor_y = cursor_positions[mc][1];
+}
+void TitleState::update()
+{
+
+}
+void TitleState::draw()
+{
+	bg->draw();
+}
+void TitleState::keyPressed(int k)
+{
+
+}
+void TitleState::keyReleased(int k)
+{
+
+}

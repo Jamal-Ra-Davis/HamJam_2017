@@ -40,7 +40,7 @@ Background.o: $(DS)Background.cpp $(DH)Background.h $(DH)GamePanel.h $(DH)SDL_He
 
 GameState.o: $(DS)GameState.cpp $(DH)GameStateManager.h $(DH)GameState.h $(DH)Background.h\
 			 $(DH)TileMap.h $(DH)SDL_Helpers.h $(DH)Numbers.h\
-			 $(DH)AudioPlayer.h $(DH)BgObject.h\
+			 $(DH)AudioPlayer.h $(DH)BgObject.h $(DH)Animation.h\
 			 $(DH)Letters.h $(DH)Pig_Player.h
 	$(CC) -c $(CFLAGS) $(DS)GameState.cpp -o $(DS)GameState.o
 
