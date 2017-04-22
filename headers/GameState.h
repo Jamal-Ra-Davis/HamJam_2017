@@ -106,4 +106,16 @@ class WinState : public GameState
 		void keyReleased(int k);
 };
 
+class TitleState : public GameState
+{
+	private:
 
+	public:
+		TitleState(GameStateManager *gsm_, SDL_Renderer *renderTarget_);
+        ~TitleState();
+        void init();
+        void update();
+        void draw();
+        void keyPressed(int k);
+        void keyReleased(int k);
+};
