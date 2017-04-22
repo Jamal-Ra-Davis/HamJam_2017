@@ -661,7 +661,7 @@ void TitleState::init()
 	cursor_width = 35;
 	cursor_height = 35;
 
-	bg = new Background("./Resources/Backgrounds/HamJam_Title.bmp", 0, renderTarget);
+	bg = new Background("./Resources/Backgrounds/HamJam_Title.bmp", 1, renderTarget);
 	bg->setVector(0, 0);
 	bg->setPosition(0, 0);
 
@@ -671,7 +671,6 @@ void TitleState::init()
 	for (int i=0; i<numAnimations; i++)
         frameNumbers[i] = tempNums[i];
 	
-	sprite_rects = NULL;
     sprite_rects = new SDL_Rect*[numAnimations];
     for (int i=0; i<numAnimations; i++)
     {
@@ -707,7 +706,7 @@ void TitleState::update()
 }
 void TitleState::draw()
 {
-	bg->draw();
+	//bg->draw();
 }
 void TitleState::keyPressed(int k)
 {
