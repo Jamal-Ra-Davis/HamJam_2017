@@ -12,7 +12,8 @@ Letters::Letters(SDL_Renderer *renderTarget_, std::string word_, int spacing_, i
 	visible = visible_;
 
 	letterTexture = NULL;
-	letterTexture = LoadTexture("./Resources/Sprites/GoS_Letters.bmp", renderTarget);
+	//letterTexture = LoadTexture("./Resources/Sprites/GoS_Letters.bmp", renderTarget);
+	letterTexture = LoadTexture("./Resources/Sprites/HamJam_Letters.bmp", renderTarget);
 	xOffset = 0;
 	yOffset = 0;	
 }

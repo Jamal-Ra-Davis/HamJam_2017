@@ -10,8 +10,8 @@ class Letters
 		int x, y;
 		bool visible;
 		int xOffset, yOffset;
-		static const int LETTER_WIDTH=6;
-		static const int LETTER_HEIGHT = 13;		
+		static const int LETTER_WIDTH=22;//6;
+		static const int LETTER_HEIGHT = 20;//13;		
 
 		SDL_Texture *letterTexture;
 		SDL_Renderer *renderTarget;

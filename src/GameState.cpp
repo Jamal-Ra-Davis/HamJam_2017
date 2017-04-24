@@ -358,7 +358,7 @@ void WinState::init()
 	}
 	fclose(fp);
 
-	words = new Letters(renderTarget, "", 3, 0, 0);
+	words = new Letters(renderTarget, "", 1, 0, 0);
 	digits = new Numbers(renderTarget, 6, 2, 5, 5);
 }
 void WinState::update()
