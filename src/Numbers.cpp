@@ -12,7 +12,8 @@ Numbers::Numbers(SDL_Renderer *renderTarget_, int digits_, int spacing_, int x_,
 	visible = visible_;
 	
 	numberTexture = NULL;
-	numberTexture = LoadTexture("./Resources/Sprites/GoS_Numbers.bmp", renderTarget);
+	//numberTexture = LoadTexture("./Resources/Sprites/GoS_Numbers.bmp", renderTarget);
+	numberTexture = LoadTexture("./Resources/Sprites/HamJam_Numbers.bmp", renderTarget);
 	xOffset = 0;
     yOffset = 0;	
 }

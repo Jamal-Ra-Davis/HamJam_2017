@@ -10,8 +10,8 @@ class Numbers
 		bool visible;
 		int xOffset, yOffset;
 		static const int MAX_DIGITS=10;
-		static const int NUM_WIDTH=6;
-		static const int NUM_HEIGHT = 13;		
+		static const int NUM_WIDTH=16;//6;
+		static const int NUM_HEIGHT = 16;//13;		
 
 		SDL_Texture *numberTexture;
 		SDL_Renderer *renderTarget;
