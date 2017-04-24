@@ -666,7 +666,6 @@ void TitleState::init()
 		cursor_positions[i][1] = temp_cur_pos[i][1];
 	}
 	menu_choice = START;
-	printf("Menu Choice start = %d\n", menu_choice);
 	setCursorPos(menu_choice);
 
 	cursor_width = 35;
