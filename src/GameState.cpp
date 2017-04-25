@@ -309,10 +309,20 @@ WinState::WinState(GameStateManager *gsm_, SDL_Renderer *renderTarget_)
     renderTarget = renderTarget_;
 	words = NULL;
 	digits = NULL;
+
+	animationTexture = NULL;
+	sprite_rects = NULL;
+	frameNumbers = NULL;
+
+	score_breaks[0] = 500;
+	score_breaks[1] = 1250;
+	score_breaks[2] = 2000;
+	score_breaks[3] = 3000;
+
+	numAnimations = PIC_NUM;
 }
 WinState::~WinState()
 {
-	printf("Win State Destructor...\n");
 	if (words)
 		delete words;
 	words = NULL;
@@ -320,6 +330,27 @@ WinState::~WinState()
 	if (digits)
 		delete digits;
 	digits = NULL;
+
+	
+	if (animationTexture)
+        SDL_DestroyTexture(animationTexture);
+    animationTexture = NULL;
+
+    if (sprite_rects)
+    {
+        for (int i=0; i<numAnimations; i++)
+        {
+            if (sprite_rects[i])
+                delete [] sprite_rects[i];
+            sprite_rects[i] = NULL;
+        }
+        delete [] sprite_rects;
+        sprite_rects = NULL;
+    }
+
+    if (frameNumbers)
+        delete[] frameNumbers;
+    frameNumbers = NULL;
 }
 void WinState::init()
 {
@@ -360,9 +391,128 @@ void WinState::init()
 
 	words = new Letters(renderTarget, "", 1, 0, 0);
 	digits = new Numbers(renderTarget, 6, 2, 5, 5);
+
+
+	score_tally = 0;
+	score_scale = score_val/(60.0 * TALLY_TIME);
+	if (score_scale > MAX_SCORE_SCALE)
+		score_scale = MAX_SCORE_SCALE;
+	tallying = true;
+
+	pic_x = 55;
+	pic_y = 55;
+	pic_width = 250;
+	pic_height = 250;
+	
+	
+	frameNumbers = NULL;
+    frameNumbers = new int[numAnimations];
+    int tempNums[PIC_NUM] = {1, 1, 1, 1, 1};
+    for (int i=0; i<numAnimations; i++)
+        frameNumbers[i] = tempNums[i];
+
+    sprite_rects = new SDL_Rect*[numAnimations];
+    for (int i=0; i<numAnimations; i++)
+    {
+        sprite_rects[i] = NULL;
+        sprite_rects[i] = new SDL_Rect[frameNumbers[i]];
+    }
+    animationTexture = LoadTexture("./Resources/Sprites/Winscreen_pig_sprites.bmp", renderTarget);
+    if (animationTexture)
+        printf("DEBUG: Loaded title background\n");
+    for (int i=0; i<numAnimations; i++)
+    {
+        for (int j=0; j<frameNumbers[i]; j++)
+        {
+            sprite_rects[i][j].x = j*pic_width;
+            sprite_rects[i][j].y = i*pic_height;
+            sprite_rects[i][j].w = pic_width;
+            sprite_rects[i][j].h = pic_height;
+        }
+    }
+
+	currentAction = STARVING;
+    animation.setFrames(animationTexture, sprite_rects[currentAction], frameNumbers[currentAction]);
+    animation.setDelay(-1);
+    pic_width = sprite_rects[currentAction][animation.getFrame()].w;
+
+	
 }
 void WinState::update()
 {
+	if (tallying)
+	{
+		if (score_tally < score_val)
+		{
+			score_tally += score_scale;
+			if (score_tally > score_val)
+			{
+				score_tally = score_val;
+			}
+		
+			int sc_val = (int)score_tally;
+			if (sc_val < score_breaks[0])
+			{
+				if (currentAction != STARVING)
+				{
+					currentAction = STARVING;
+    				animation.setFrames(animationTexture, sprite_rects[currentAction], frameNumbers[currentAction]);
+    				animation.setDelay(-1);
+    				pic_width = sprite_rects[currentAction][animation.getFrame()].w;
+				}
+			}
+			else if (sc_val < score_breaks[1])
+        	{
+            	if (currentAction != NORMAL)
+            	{
+                	currentAction = NORMAL;
+                	animation.setFrames(animationTexture, sprite_rects[currentAction], frameNumbers[currentAction]);
+                	animation.setDelay(-1);
+                	pic_width = sprite_rects[currentAction][animation.getFrame()].w;
+            	}
+        	}
+			else if (sc_val < score_breaks[2])
+        	{
+            	if (currentAction != HAPPY)
+            	{
+                	currentAction = HAPPY;
+                	animation.setFrames(animationTexture, sprite_rects[currentAction], frameNumbers[currentAction]);
+                	animation.setDelay(-1);
+                	pic_width = sprite_rects[currentAction][animation.getFrame()].w;
+            	}
+        	}
+			else if (sc_val < score_breaks[3])
+        	{
+            	if (currentAction != PUDGY)
+            	{
+                	currentAction = PUDGY;
+                	animation.setFrames(animationTexture, sprite_rects[currentAction], frameNumbers[currentAction]);
+                	animation.setDelay(-1);
+                	pic_width = sprite_rects[currentAction][animation.getFrame()].w;
+            	}
+        	}
+			else
+			{
+				if (currentAction != FAT)
+            	{
+                	currentAction = FAT;
+                	animation.setFrames(animationTexture, sprite_rects[currentAction], frameNumbers[currentAction]);
+                	animation.setDelay(-1);
+                	pic_width = sprite_rects[currentAction][animation.getFrame()].w;
+            	}
+			}
+		}
+
+		if ((int)score_tally == score_val && enter)
+			tallying = false;
+
+		up = false;
+    	down = false;
+    	enter = false;
+    	back = false;
+		return;
+	}
+
 	if (set_high_score)
 	{
 		//Enterting name characters
@@ -443,6 +593,31 @@ void WinState::update()
 }
 void WinState::draw()
 {
+	SDL_Rect posRect = {(int)(pic_x), (int)(pic_y), pic_width, pic_height};
+    SDL_Rect cropRect = animation.getImageRect();
+    SDL_RenderCopyEx(renderTarget, animation.getFrameTexture(), &cropRect, &posRect, 0, NULL, SDL_FLIP_NONE);
+
+	if (tallying)
+	{
+		
+		//SDL_Rect posRect = {(int)(pic_x - pic_width/2), (int)(pic_y - pic_height/2), pic_width, pic_height};
+		//SDL_Rect posRect = {(int)(pic_x), (int)(pic_y), pic_width, pic_height};
+    	//SDL_Rect cropRect = animation.getImageRect();
+    	//SDL_RenderCopyEx(renderTarget, animation.getFrameTexture(), &cropRect, &posRect, 0, NULL, SDL_FLIP_NONE);
+
+		
+		words->setVisible(true);
+		words->setWord("SCORE");
+		words->setX(335/2 + 305 - words->getWidth()/2);
+        words->setY(100);
+        words->draw();
+
+		digits->setX(335/2 + 305 - digits->getWidth()/2);
+        digits->setY(words->getY() + words->getHeight() + 10);
+        digits->draw((int)score_tally);
+		return;
+	}
+
 	if (set_high_score)
     {
 		bool word_visible = true;
@@ -452,14 +627,26 @@ void WinState::draw()
 		}
 
 		//Enterting name characters
-		words->setX(100);
+		words->setVisible(true);
+		words->setWord("NEW HIGH SCORE");
+		words->setX(335/2 + 305 - words->getWidth()/2);
         words->setY(100);
+		words->draw();
+
+		digits->setX(335/2 + 305 - digits->getWidth()/2);
+        digits->setY(words->getY() + words->getHeight() + 10);
+        digits->draw((int)score_tally);
+
+		//words->setX(100);
+        //words->setY(words->getY() + words->getHeight() + 10);
 		std::string str = "";
 		for (int i=0; i<name_idx; i++)
 			str.push_back(score_name[i]);
 
 		words->setVisible(true);
 		words->setWord(str);
+		words->setX(335/2 + 273);
+		words->setY(digits->getY() + digits->getHeight() + 10);
 		words->draw();
 
 
@@ -511,7 +698,7 @@ void WinState::draw()
     }
     else
     {
-		words->setX(100);
+		words->setX(335/2 + 200);
         words->setY(100);
 		words->setVisible(true);
 

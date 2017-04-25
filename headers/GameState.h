@@ -96,7 +96,28 @@ class WinState : public GameState
 		Letters *words;	
 		Numbers *digits;
 
+		//Animations
+        int numAnimations;
+        SDL_Texture *animationTexture;
+        SDL_Rect **sprite_rects;
+        int *frameNumbers;
+        Animation animation;
+        int currentAction;
+
+		int pic_x;
+		int pic_y;
+		int pic_width;
+		int pic_height;
+
+		const static float MAX_SCORE_SCALE = 8.5;
+		const static float TALLY_TIME = 5.0;
+		float score_tally;
+		float score_scale;
+		bool tallying;
+		int score_breaks[4];
+
 	public:
+		enum Score_Picture{STARVING, NORMAL, HAPPY, PUDGY, FAT, PIC_NUM};
 		WinState(GameStateManager *gsm_, SDL_Renderer *renderTarget_);
 		~WinState();
 		void init();
