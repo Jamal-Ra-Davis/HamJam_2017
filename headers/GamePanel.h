@@ -19,13 +19,15 @@ class GamePanel
     	SDL_Renderer *renderTarget;
 		GameStateManager *gsm;
 
+		SDL_Texture *display_texture;
+
 		const Uint8 *keyState;
 		SDL_Event event;
 
 	public:
 		static bool *isRunningControl;
-		static const int WIDTH = 206;//214;//320
-		static const int HEIGHT = 116;//141;//240
+		static int WIDTH;// = 206;//214;//320
+		static int HEIGHT;// = 116;//141;//240
 
 		static const int WINDOW_WIDTH=640;//640;
 		static const int WINDOW_HEIGHT=360;//480;

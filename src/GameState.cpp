@@ -576,7 +576,7 @@ void WinState::update()
 		if (enter)
 		{
 			gsm->setScore(0);
-        	gsm->setState(GameStateManager::GAMEPLAY_STATE);
+        	gsm->setState(GameStateManager::TITLE_STATE);
 			return;
 		}	
 	}

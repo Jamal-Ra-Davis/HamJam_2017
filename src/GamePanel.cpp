@@ -4,6 +4,8 @@
 #include <stdio.h>
 
 bool *GamePanel::isRunningControl;
+int GamePanel::WIDTH;
+int GamePanel::HEIGHT;
 
 GamePanel::GamePanel()
 {
@@ -17,6 +19,7 @@ GamePanel::GamePanel()
 	window = NULL;
 	renderTarget = NULL;
 	gsm = NULL;
+	display_texture = NULL;
 	GamePanel::isRunningControl = getRunningPointer();
 }
 GamePanel::~GamePanel()
@@ -27,6 +30,10 @@ GamePanel::~GamePanel()
 		SDL_DestroyRenderer(renderTarget);
 	if (gsm)
 		delete gsm;
+	if (display_texture)
+		SDL_DestroyTexture(display_texture);
+
+	display_texture = NULL;
 	gsm = NULL;
 	window = NULL;
 	renderTarget = NULL;
@@ -44,12 +51,15 @@ int GamePanel::init()
 	//window = SDL_CreateWindow(window_name.c_str(), SDL_WINDOWPOS_CENTERED,
     //                            SDL_WINDOWPOS_CENTERED, (int)(WIDTH*3), (int)(HEIGHT*3), SDL_WINDOW_SHOWN /*| SDL_WINDOW_FULLSCREEN_DESKTOP*/);
 	window = SDL_CreateWindow(window_name.c_str(), SDL_WINDOWPOS_CENTERED,
-                                SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN /*| SDL_WINDOW_FULLSCREEN_DESKTOP*/);
+                                SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN_DESKTOP);
 	if (window == NULL)
     {
         printf("Window creation error: %s\n", SDL_GetError());
         return 1;
     }
+
+	SDL_GetWindowSize(window, &WIDTH, &HEIGHT);
+
 
 	renderTarget = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (renderTarget == NULL)
@@ -74,7 +84,7 @@ int GamePanel::init()
 	int g=52;//147;
 	int b=202;//169;
 	SDL_SetRenderDrawColor(renderTarget, r, g, b, 0xFF);
-
+	display_texture = SDL_CreateTexture(renderTarget, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 	return 0;	
 }
 int GamePanel::run()
@@ -133,10 +143,19 @@ void GamePanel::update()
 }
 void GamePanel::draw()
 {
-	SDL_RenderClear(renderTarget);
+	SDL_SetRenderTarget(renderTarget, display_texture);
 
+	SDL_RenderClear(renderTarget);//--
+	
 	//Draw all game objects/graphics
-	gsm->draw();
+	gsm->draw();//--
+
+	SDL_SetRenderTarget(renderTarget, NULL);
+
+	SDL_Rect scale = {0, 0, WIDTH, HEIGHT};
+	//printf("Height = %d, Width = %d\n", WIDTH, HEIGHT);
+	
+	SDL_RenderCopy(renderTarget, display_texture, NULL, NULL);//&scale);
 }
 void GamePanel::drawToScreen()
 {
